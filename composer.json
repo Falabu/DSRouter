@@ -1,0 +1,20 @@
+{
+    "name": "falabu/dsrouter",
+    "description": "Simple php router",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Kurucz David",
+            "email": "david.kurucz@gmail.com"
+        }
+    ],
+     "require": {
+        "php": ">=5.3.0"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {
+            "DSRouter": "src/"
+        }
+    }
+}
