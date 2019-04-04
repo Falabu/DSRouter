@@ -15,12 +15,18 @@ class Router
     {
         $this->request = new Request();
         $this->url_parser = new URLParser();
-
     }
 
     public function addRoute($route, $method, $function)
     {
         $method = strtoupper($method);
+        $parameter_name = null;
+
+        if (preg_match_all('/{([^#]+?)}/', $route, $parameter) !== 0) {
+            $parameter_name = $parameter[1][0];
+            $start_index = strpos($route, $parameter[0][0]);
+            $route = substr($route, 0, $start_index - 1);
+        }
 
         if (in_array($method, $this->possible_methods)) {
             $route_index = $this->searchForRoute($route);
@@ -28,11 +34,10 @@ class Router
             if (null !== $route_index) {
                 $this->routes[$route_index]->addCallFunctionToMethod($method, $function);
             } else {
-                $this->routes[] = new Route($route, $method, $function);
+                $this->routes[] = new Route($route, $method, $function,$parameter_name);
             }
-        }else{
-            echo "A METHOD nem támogatott: " . $route . ' ' . $method . ' '. $function;
-            die();
+        } else {
+            echo "A METHOD nem támogatott: " . $route . ' ' . $method . ' ' . $function;
             //TODO: Hibakezelés
         }
     }
@@ -41,22 +46,30 @@ class Router
     {
         $index_for_route = $this->searchForRoute($this->url_parser->getUrlWithoutHost());
 
+        if ($index_for_route === null) {
+            $index_for_route = $this->searchForRoute($this->url_parser->getURL());
+
+            if ($index_for_route !== null) {
+                $this->routes[$index_for_route]->setParamValue($this->url_parser->getLastParam());
+            }
+        }
+
+        if ($this->routes[$index_for_route]->isParamSet() && $this->routes[$index_for_route]->issetParamValue() === false) {
+            echo "Nincs paraméter a paraméteres utvonalhoz";
+            //TODO: Hibakezelés
+        }
+
         if (null !== $index_for_route) {
             if ($this->routes[$index_for_route]->methodExist($this->request->getMethod())) {
                 $this->routes[$index_for_route]->callFunction($this->request->getMethod(), $this->request);
             } else {
-                echo "Nincs ilyen METHOD az útvonalhoz megadva";
+                echo "Nincs METHOD az útvonalhoz megadva";
                 //TODO:Hibakezelés
             }
         } else {
             echo "Nincs ilyen útvonal!";
             //TODO: Hibakezelés
         }
-
-    }
-
-    public function printAllRoute()
-    {
 
     }
 

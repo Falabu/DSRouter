@@ -83,4 +83,12 @@ class URLParser
     {
         return $this->url . $this->file . $this->params;
     }
+
+    public function getURL(){
+        return substr($this->url, 0, -1);
+    }
+
+    public function getLastParam(){
+        return explode('?', end($this->urlArray))[0];
+    }
 }

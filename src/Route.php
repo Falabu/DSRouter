@@ -11,14 +11,22 @@ class Route
 
     private $function_per_method;
 
-    private $parameter_name = 'valami';
+    private $parameter_name;
 
-    private $parameter_value = 'ezkell nekem';
+    private $parameterizable = false;
 
-    public function __construct($route_name, $method, $function)
+    private $parameter_value;
+
+    public function __construct($route_name, $method, $function, $parameter_name)
     {
         $this->route_name = $route_name;
         $this->function_per_method[$method] = $function;
+
+        if (null !== $parameter_name) {
+            $this->parameter_name = $parameter_name;
+            $this->parameterizable = true;
+        }
+
     }
 
     public function addCallFunctionToMethod($method, $function)
@@ -64,11 +72,13 @@ class Route
                         if ($method_parameter->getClass()->name === 'DSRouter\Request') {
                             $parameter_array[] = $request;
                         }
+                    }elseif ($method_parameter->name === $this->parameter_name){
+                        $parameter_array[] = $this->parameter_value;
+                    }else{
+                        $parameter_array[] = "Nincs paraméter";
+                        //TODO: Hibakezelés
                     }
 
-                    if ($method_parameter->name === $this->parameter_name) {
-                        $parameter_array[] = $this->parameter_value;
-                    }
                 }
 
                 $class_method_reflection->invokeArgs($called_class, $parameter_array);
@@ -78,5 +88,31 @@ class Route
             echo "Nincs ilyen hívható osztály ami a útvonalhoz van kapcsolva";
             //TODO: Hibakezelés
         }
+    }
+
+    public function isParamSet()
+    {
+        return $this->parameterizable;
+    }
+
+    public function setParamValue($param)
+    {
+        $this->parameter_value = $param;
+    }
+
+    public function issetParamValue()
+    {
+        $isset = true;
+
+        if (!isset($this->parameter_value)) {
+            $isset = false;
+        }
+
+        if (strlen($this->parameter_value) === 0) {
+            $isset = false;
+        }
+
+        return $isset;
+
     }
 }
