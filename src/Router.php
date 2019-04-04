@@ -33,8 +33,11 @@ class Router
 
             if (null !== $route_index) {
                 $this->routes[$route_index]->addCallFunctionToMethod($method, $function);
+                if (null !== $parameter_name) {
+                    $this->routes[$route_index]->setParamName($parameter_name);
+                }
             } else {
-                $this->routes[] = new Route($route, $method, $function,$parameter_name);
+                $this->routes[] = new Route($route, $method, $function, $parameter_name);
             }
         } else {
             echo "A METHOD nem támogatott: " . $route . ' ' . $method . ' ' . $function;

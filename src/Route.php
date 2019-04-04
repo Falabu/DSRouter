@@ -72,9 +72,9 @@ class Route
                         if ($method_parameter->getClass()->name === 'DSRouter\Request') {
                             $parameter_array[] = $request;
                         }
-                    }elseif ($method_parameter->name === $this->parameter_name){
+                    } elseif ($method_parameter->name === $this->parameter_name) {
                         $parameter_array[] = $this->parameter_value;
-                    }else{
+                    } else {
                         $parameter_array[] = "Nincs paraméter";
                         //TODO: Hibakezelés
                     }
@@ -90,6 +90,11 @@ class Route
         }
     }
 
+    public function setParamName($name)
+    {
+        $this->parameter_name = $name;
+    }
+
     public function isParamSet()
     {
         return $this->parameterizable;
@@ -98,6 +103,7 @@ class Route
     public function setParamValue($param)
     {
         $this->parameter_value = $param;
+        $this->parameterizable = true;
     }
 
     public function issetParamValue()
